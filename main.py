@@ -64,10 +64,13 @@ def command_handler(message):
     if text.startswith('/qr'):
         if len(split_text) >= 3:
             qr_text = ' '.join(split_text[2:])
-            qr_type = split_text[1] == 'p'
-            qr_img_name = make_qr_code(text=qr_text)
-            send_qr(chat_id=chat_id, msg_id=msg_id, img_name=qr_img_name,
-                        text=qr_text, photo=qr_type)
+            qr_type = split_text[1]
+            if qr_type in ('p', 's'):
+                qr_img_name = make_qr_code(text=qr_text)
+                send_qr(chat_id=chat_id, msg_id=msg_id, img_name=qr_img_name,
+                            text=qr_text, photo=qr_type)
+            else:
+                bot.reply_to(message,f"لايوجد نوع بهذا الاسم '{qr_type}' يمكنك استخدام p او s\nللتفاصيل:\n/help{bot_username}")
         else:
             example_command = f"""
             \rيوجد خطأ في تكوين الامر مثال صحيح للامر:
