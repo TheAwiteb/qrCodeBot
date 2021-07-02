@@ -92,7 +92,7 @@ def command_handler(message):
         \rانا بوت استطيع تحويل النص او الرابط الذي ترسله لي الى QR Code
         \rيمكنك مشاركة البوت عبر QR Code الذي في الاعلى 
         \rلمعرفة طريقة الاستخدام ارسل /help{bot_username}
-        \r virsion: {VERSION}
+        \r الاصدار: {VERSION}
         """
         img_name = make_qr_code(bot_url)
         send_qr(chat_id, msg_id, img_name, True, None, start_message)
