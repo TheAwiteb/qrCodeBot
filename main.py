@@ -3,6 +3,8 @@ from time import sleep
 import telebot
 from config import TOKEN, VERSION
 import qrcode
+import cv2
+import requests
 from string import ascii_lowercase
 from random import choice
 
@@ -36,6 +38,29 @@ def make_qr_code(text:str):
     img_name = random_name()+'.jpeg'
     img.save(img_name,"JPEG")
     return img_name
+
+def read_img(url):
+    """ read image from url and Extract the content of the QR code
+
+    Args:
+        url (str): url of image
+
+    Returns:
+        str: content of the QR code
+    """
+    img_name = random_name()+'.jpeg'
+    with open(img_name, 'wb') as f:
+        f.write(requests.get(url).content)
+    image = cv2.imread(img_name)
+    detector = cv2.QRCodeDetector()
+    data, vertices_array, binary_qrcode = detector.detectAndDecode(image)
+    os.remove(img_name)
+    if vertices_array is not None:
+        return data
+    else:
+        return "لم يتم التعرف على QR code في الصورة"
+
+
 
 def send_qr(chat_id:str, msg_id:str, img_name:str, photo:bool, text:str, caption="QR code for [ {} ]"):    
     """ send QR code for chat_id
@@ -100,6 +125,12 @@ def command_handler(message):
         img_name = make_qr_code(bot_url)
         send_qr(chat_id, msg_id, img_name, True, None, start_message)
 
+@bot.message_handler(func=lambda msg: msg.caption and msg.caption.startswith('/qr'), content_types=['photo'])
+def photo_handler(message):
+    photo_id = message.photo[-1].file_id
+    file_url = bot.get_file_url(photo_id)
+    text = read_img(file_url)
+    bot.reply_to(message, text)
 
 # Run bot
 while True:
