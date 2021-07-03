@@ -1,10 +1,12 @@
 import os
 from time import sleep
 import telebot
+from telebot import types
 from config import TOKEN, VERSION
 import qrcode
 import cv2
 import requests
+import json_function as j_function
 from string import ascii_lowercase
 from random import choice
 
@@ -60,8 +62,6 @@ def read_img(url):
     else:
         return "لم يتم التعرف على QR code في الصورة"
 
-
-
 def send_qr(chat_id:str, msg_id:str, img_name:str, photo:bool, text:str, caption="QR code for [ {} ]"):    
     """ send QR code for chat_id
 
@@ -75,10 +75,21 @@ def send_qr(chat_id:str, msg_id:str, img_name:str, photo:bool, text:str, caption
     """
     with open(img_name, 'rb') as f:
         if photo:
-            bot.send_photo(chat_id, f,caption.format(text if text else ''), msg_id)
+            bot.send_photo(chat_id, f,caption.format(text if text else ''), msg_id,reply_markup=stars_markup())
         else:
-            bot.send_sticker(chat_id, f,msg_id)
+            bot.send_sticker(chat_id, f,msg_id, reply_markup=stars_markup())
     os.remove(img_name)
+
+def stars_markup():
+    """ make Markup for five star
+
+    Returns:
+        [telebot.types.InlineKeyboardMarkup]: markup
+    """
+    markup = types.InlineKeyboardMarkup()
+    button = types.InlineKeyboardButton
+    markup.add(*[button(text=f'{i}⭐️', callback_data=str(i)) for i in range(1,6)])
+    return markup
 
 @bot.message_handler(func=lambda msg: msg.text and msg.text.startswith('/'))
 def command_handler(message):
@@ -93,7 +104,7 @@ def command_handler(message):
             if qr_type in ('p', 's'):
                 qr_img_name = make_qr_code(text=qr_text)
                 send_qr(chat_id=chat_id, msg_id=msg_id, img_name=qr_img_name,
-                            text=qr_text, photo=qr_type== 'p')
+                            text=qr_text+"\n\nتقيمك للبوت 🌹", photo=qr_type== 'p')
             else:
                 bot.reply_to(message,f"لايوجد نوع بهذا الاسم '{qr_type}' يمكنك استخدام p او s\nللتفاصيل:\n/help{bot_username}")
         else:
@@ -129,8 +140,19 @@ def command_handler(message):
 def photo_handler(message):
     photo_id = message.photo[-1].file_id
     file_url = bot.get_file_url(photo_id)
-    text = read_img(file_url)
-    bot.reply_to(message, text)
+    text = read_img(file_url)+"\n\nتقيمك للبوت 🌹"
+    bot.reply_to(message, text, reply_markup=stars_markup(),
+                    disable_web_page_preview=True)
+
+@bot.callback_query_handler(func=lambda q: True)
+def query_handler(call):
+    chat_id = call.message.chat.id
+    msg_id = call.message.id
+    key = call.data
+    val = int(j_function.get_key(key))
+    j_function.update_data(key, val+1)
+    bot.edit_message_reply_markup(chat_id, msg_id)
+    bot.answer_callback_query(call.id, text="شكرا للتقيم", show_alert=False)
 
 # Run bot
 while True:
