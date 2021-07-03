@@ -93,7 +93,7 @@ def command_handler(message):
             if qr_type in ('p', 's'):
                 qr_img_name = make_qr_code(text=qr_text)
                 send_qr(chat_id=chat_id, msg_id=msg_id, img_name=qr_img_name,
-                            text=qr_text, photo=qr_type)
+                            text=qr_text, photo=qr_type== 'p')
             else:
                 bot.reply_to(message,f"لايوجد نوع بهذا الاسم '{qr_type}' يمكنك استخدام p او s\nللتفاصيل:\n/help{bot_username}")
         else:
