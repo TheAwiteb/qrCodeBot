@@ -2,11 +2,12 @@ import os
 from time import sleep
 import telebot
 from telebot import types
-from config import TOKEN, VERSION
+from config import SUSER_ID, TOKEN, VERSION
 import qrcode
 import cv2
 import requests
 import json_function as j_function
+import matplotlib.pyplot as plt
 from string import ascii_lowercase
 from random import choice
 
@@ -80,6 +81,41 @@ def send_qr(chat_id:str, msg_id:str, img_name:str, photo:bool, text:str, caption
             bot.send_sticker(chat_id, f,msg_id, reply_markup=stars_markup())
     os.remove(img_name)
 
+def make_graph():
+    """ Create Graph of user rating
+
+    Returns:
+        str: Graph file name
+    """
+    names = ["One star ", "Two stars ", "Three stars ", 
+                "Four stars ", "Five stars "]
+    values = j_function.get_values()
+
+    plt.figure(figsize=(20, 7))
+
+    plt.subplot(131)
+    plt.bar(names, values)
+    plt.subplot(132)
+    plt.scatter(names, values)
+    plt.suptitle('Graph of {} rating by users'.format(bot_username))
+    file_name = random_name()+'.jpg'
+    plt.savefig(file_name)
+    return file_name
+
+def send_graph():
+    filename = make_graph()
+    sum_values = sum(j_function.get_values())
+    five_star_val = j_function.get_key('5')
+    rating = 0 if not all((sum_values, five_star_val)) else (5/(sum_values/five_star_val)) # this mean 0 if sum_values == 0 or five_star_val == 0 
+    caption = f"""
+    \rرسم بياني لـ :{bot_username}
+    \rالنسبة: {round(rating, 1)}
+    \rاجمالي االتقيمات: {sum_values}
+    """
+    with open(filename,'rb') as f:
+        bot.send_photo(SUSER_ID, f,caption)
+    os.remove(filename)
+
 def stars_markup():
     """ make Markup for five star
 
@@ -135,6 +171,11 @@ def command_handler(message):
         """
         img_name = make_qr_code(bot_url)
         send_qr(chat_id, msg_id, img_name, True, None, start_message)
+    elif text.startswith('/graph'):
+        if str(chat_id) == SUSER_ID:
+            send_graph()
+        else:
+            bot.reply_to(message, "هذا الامر خاص بمالك البوت فقط")
 
 @bot.message_handler(func=lambda msg: msg.caption and msg.caption.startswith('/qr'), content_types=['photo'])
 def photo_handler(message):
