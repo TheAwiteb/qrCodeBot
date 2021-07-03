@@ -1,4 +1,4 @@
 
 TOKEN = str("") # Enter the bot token here
 
-VERSION = "1.0.1"
+VERSION = "1.1.0"
