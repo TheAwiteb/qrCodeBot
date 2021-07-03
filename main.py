@@ -98,7 +98,7 @@ def command_handler(message):
                 bot.reply_to(message,f"لايوجد نوع بهذا الاسم '{qr_type}' يمكنك استخدام p او s\nللتفاصيل:\n/help{bot_username}")
         else:
             example_command = f"""
-            \rيوجد خطأ في تكوين الامر مثال صحيح للامر:
+            \rيوجد خطأ في تكوين الامر:
             \rلمعرفة طريقة الاستخدام ارسل /help{bot_username}
             """
             bot.reply_to(message, example_command)
