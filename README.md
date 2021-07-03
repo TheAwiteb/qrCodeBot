@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  <a><img src="./img/bot_image.jpg" alt="qrCodeBot - img"></a>
+  <a><img width="350" height="350" src="./img/bot_image.jpg" alt="qrCodeBot - img"></a>
   <br>
   qrCodeBot
   <br>
