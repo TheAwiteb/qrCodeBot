@@ -41,10 +41,10 @@ def update_data(key:str, new_val:dict):
     data[key] = new_val
     push_data(new_data = data)
 
-def get_sum():
-    """ returns sum of values
+def get_values():
+    """ returns values of data
 
     Returns:
-        int: sum of values
+        list: list of values
     """
-    return sum(get_data().values())
+    return get_data().values()
