@@ -44,6 +44,7 @@ python3 main.py
 ## Features
 
 * conver text to QR Code
+* reading images and extracting the content of the QR code from them
 
 ## Usage
 
@@ -54,6 +55,11 @@ python3 main.py
 <b>to convert text to sticker QR Code send this command to bot:</b>
 
     /qr s This text will be converted
+
+<b>to extracting the content of the QR code from image</b>
+> add this command to caption of image
+
+    /qr
 
 ## LICENSE
 [GPLv3](https://www.gnu.org/licenses/gpl-3.0.html)
