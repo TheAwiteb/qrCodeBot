@@ -45,6 +45,7 @@ python3 main.py
 
 * conver text to QR Code
 * reading images and extracting the content of the QR code from them
+* You can see the users' rating (for the bot owner only) 
 
 ## Usage
 
@@ -60,6 +61,11 @@ python3 main.py
 > add this command to caption of image
 
     /qr
+
+<b>see the users' rating</b>
+> for SUDO_ID only (You can put it in config file)
+
+    /graph
 
 ## LICENSE
 [GPLv3](https://www.gnu.org/licenses/gpl-3.0.html)
